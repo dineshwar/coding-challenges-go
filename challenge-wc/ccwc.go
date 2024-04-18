@@ -13,6 +13,6 @@ func main() {
     if err != nil {
       fmt.Println("File does not exist")
     }
-    fmt.Println(file.Size())
+    fmt.Println(file.Size(), args[1])
   }
 }
