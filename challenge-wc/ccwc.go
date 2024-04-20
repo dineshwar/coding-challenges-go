@@ -18,21 +18,23 @@ func main() {
   } else if (args[0] == "-l") {
     file, err := os.Open(args[1])
     if err != nil {
+		  fmt.Println("Error:", err)
+		  return
+	  }
+	  defer file.Close()
+
+	  lineCount := 0
+	  scanner := bufio.NewScanner(file)
+	  for scanner.Scan() {
+		  lineCount++
+	  }
+
+	  if err := scanner.Err(); err != nil {
 		fmt.Println("Error:", err)
 		return
-	}
-	defer file.Close()
+	  }
+    fmt.Println(lineCount, args[1])
+  } else if (args[0] == "-w") {
 
-	lineCount := 0
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lineCount++
-	}
-
-	if err := scanner.Err(); err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-     fmt.Println(lineCount, args[1])
   }
 }
