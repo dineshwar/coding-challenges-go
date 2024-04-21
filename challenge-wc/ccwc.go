@@ -46,5 +46,8 @@ func main() {
 			}
 		}
 		fmt.Println(wordCount, args[1])
+	} else if args[0] == "-m" {
+		charCount := 0
+		fmt.Println(charCount, args[1])
 	}
 }
