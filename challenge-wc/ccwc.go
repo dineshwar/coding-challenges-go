@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func get_file_size(fileName string) int64 {
+func getFileSize(fileName string) int64 {
 	file, err := os.Stat(fileName)
 	if err != nil {
 		fmt.Println("File does not exist")
@@ -15,42 +15,62 @@ func get_file_size(fileName string) int64 {
 	return file.Size()
 }
 
+func getLineCount(fileName os.File) int {
+	lineCount := 0
+	scanner := bufio.NewScanner(&fileName)
+	for scanner.Scan() {
+		lineCount++
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println("Error:", err)
+		return 0
+	}
+	return lineCount
+}
+
+func getWordCount(fileName os.File) int {
+	wordCount := 0
+	scanner := bufio.NewScanner(&fileName)
+	for scanner.Scan() {
+		line := strings.Fields(scanner.Text())
+		for _, w := range line {
+			if w != "" {
+				wordCount++
+			}
+		}
+	}
+	return wordCount
+}
+
 func main() {
 	argsWithProg := os.Args
 	args := argsWithProg[1:]
-	file, err := os.Open(args[1])
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-	defer file.Close()
 	if args[0] == "-c" {
-		fmt.Println(get_file_size(args[1]), args[1])
+		fmt.Println(getFileSize(args[1]), args[1])
 	} else if args[0] == "-l" {
-		lineCount := 0
-		scanner := bufio.NewScanner(file)
-		for scanner.Scan() {
-			lineCount++
-		}
-
-		if err := scanner.Err(); err != nil {
+		file, err := os.Open(args[1])
+		if err != nil {
 			fmt.Println("Error:", err)
 			return
 		}
-		fmt.Println(lineCount, args[1])
+		defer file.Close()
+		fmt.Println(getLineCount(*file), args[1])
 	} else if args[0] == "-w" {
-		wordCount := 0
-		scanner := bufio.NewScanner(file)
-		for scanner.Scan() {
-			line := strings.Fields(scanner.Text())
-			for _, w := range line {
-				if w != "" {
-					wordCount++
-				}
-			}
+		file, err := os.Open(args[1])
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
 		}
-		fmt.Println(wordCount, args[1])
+		defer file.Close()
+		fmt.Println(getWordCount(*file), args[1])
 	} else if args[0] == "-m" {
+		file, err := os.Open(args[1])
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
+		defer file.Close()
 		charCount := 0
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
@@ -60,5 +80,15 @@ func main() {
 		}
 
 		fmt.Println(charCount, args[1])
+	} else {
+		if strings.Contains(args[0], ".") {
+			file, err := os.Open(args[0])
+			if err != nil {
+				fmt.Println("Error:", err)
+				return
+			}
+			defer file.Close()
+			fmt.Println(getLineCount(*file), getFileSize(args[0]), getWordCount(*file), args[0])
+		}
 	}
 }
