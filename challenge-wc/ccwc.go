@@ -31,6 +31,11 @@ func getLineCount(fileName os.File) int {
 
 func getWordCount(fileName os.File) int {
 	wordCount := 0
+	fileName.Seek(0, 0)
+	/*
+		When two file using same file reference it will case the first function to move
+		the end of the file. To reset use this function.
+	*/
 	scanner := bufio.NewScanner(&fileName)
 	for scanner.Scan() {
 		line := strings.Fields(scanner.Text())
@@ -87,8 +92,8 @@ func main() {
 				fmt.Println("Error:", err)
 				return
 			}
-			defer file.Close()
-			fmt.Println(getLineCount(*file), getFileSize(args[0]), getWordCount(*file), args[0])
+			// defer file.Close()
+			fmt.Println(getLineCount(*file), getWordCount(*file), getFileSize(args[0]), args[0])
 		}
 	}
 }
