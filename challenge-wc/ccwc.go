@@ -7,6 +7,14 @@ import (
 	"strings"
 )
 
+func get_file_size(fileName string) int64 {
+	file, err := os.Stat(fileName)
+	if err != nil {
+		fmt.Println("File does not exist")
+	}
+	return file.Size()
+}
+
 func main() {
 	argsWithProg := os.Args
 	args := argsWithProg[1:]
@@ -17,11 +25,7 @@ func main() {
 	}
 	defer file.Close()
 	if args[0] == "-c" {
-		file, err := os.Stat(args[1])
-		if err != nil {
-			fmt.Println("File does not exist")
-		}
-		fmt.Println(file.Size(), args[1])
+		fmt.Println(get_file_size(args[1]), args[1])
 	} else if args[0] == "-l" {
 		lineCount := 0
 		scanner := bufio.NewScanner(file)
@@ -48,6 +52,13 @@ func main() {
 		fmt.Println(wordCount, args[1])
 	} else if args[0] == "-m" {
 		charCount := 0
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			// Add the number of characters in the line to the count
+			// fmt.Println(scanner.Text())
+			charCount += len(scanner.Text())
+		}
+
 		fmt.Println(charCount, args[1])
 	}
 }
